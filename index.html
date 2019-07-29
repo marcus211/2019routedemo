@@ -110,7 +110,7 @@
         left: 60px;
         padding: 5px;
         border-radius: 5px;
-        max-width: 240px;
+        max-width: 300px;
         border: 1px solid rgba(0, 0, 0, 0.4);
         box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.50);
         font-family: 'Open Sans', sans-serif;
@@ -172,25 +172,6 @@
         margin-right: 5px;
         width: 10px;
     }
-
-    /*layers menu*/
-    #layerSwitch {
-        display: block;
-        background: rgb(255, 255, 255);
-        position: absolute;
-        z-index: 1;
-        top: 40%;
-        left: 10px;
-        padding: 5px;
-        border-radius: 5px;
-        border: 1px solid rgba(0, 0, 0, 0.4);
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.50);
-        font-family: 'Open Sans', sans-serif;
-    }
-
-    .layersMenu {
-        height: 30px;
-    }
 </style>
 
 <body>
@@ -205,30 +186,11 @@
         <h4>圖　例</h4>
         <div><span style='background-color: red'></span>外圈路跑路線</div>
         <div><span style='background-color: blue'></span>內圈路跑路線</div>
-        <div><span style='background-color: orange'></span>點位位置</div>
+        <div><span style='background-color: green'></span>預定主場地</div>
+        <div><span style='background-color: #ff00ff;border-radius: 50%'></span>起跑、終點位置</div>
+        <div><span style='background-color: orange;border-radius: 50%'></span>點位位置</div>
     </div>
-    <div id='layerSwitch'>
-        <div class='layersMenu'>
-            <input id='streets-v11' type='radio' name='rtoggle' value='streets' checked='checked'>
-            <label for='streets'>streets</label>
-        </div>
-        <div class='layersMenu'>
-            <input id='light-v10' type='radio' name='rtoggle' value='light'>
-            <label for='light'>light</label>
-        </div>
-        <div class='layersMenu'>
-            <input id='dark-v10' type='radio' name='rtoggle' value='dark'>
-            <label for='dark'>dark</label>
-        </div>
-        <div class='layersMenu'>
-            <input id='outdoors-v11' type='radio' name='rtoggle' value='outdoors'>
-            <label for='outdoors'>outdoors</label>
-        </div>
-        <div class='layersMenu'>
-            <input id='satellite-v9' type='radio' name='rtoggle' value='satellite'>
-            <label for='satellite'>satellite</label>
-        </div>
-    </div>
+
 
     <!--欄位介面-->
     <div id="clickButton" class="clickOff">
@@ -244,19 +206,6 @@
             center: [120.731408, 23.822170], // starting position
             zoom: 14 // starting zoom
         });
-
-
-        //Layers Switch
-        const layerList = document.getElementById('layerSwitch');
-        const inputs = layerList.getElementsByTagName('input');
-
-        function switchLayer(d) {
-            console.log(d.target.id);
-            map.setStyle('mapbox://styles/mapbox/' + d.target.id);
-        }
-        for (var i = 0; i < inputs.length; i++) {
-            inputs[i].onclick = switchLayer;
-        }
 
         //Display map navigation controls
         const buttonNav = new mapboxgl.NavigationControl();
@@ -287,6 +236,8 @@
             const longPath = 'GeoJSON/longRoute.geojson';
             const shortPath = 'GeoJSON/shortRoute.geojson';
             const marker = 'GeoJSON/markerPoint.geojson';
+            const entrance = 'GeoJSON/mapEntrance.geojson';
+            const area = 'GeoJSON/mapArea.geojson';
 
             //add source
             map.addSource('longRoad', {
@@ -300,6 +251,14 @@
             map.addSource('mapPoint', {
                 type: 'geojson',
                 data: marker
+            });
+            map.addSource('mapEntrance', {
+                type: 'geojson',
+                data: entrance
+            });
+            map.addSource('mapArea', {
+                type: 'geojson',
+                data: area
             });
 
             //add geojson data to layer
@@ -334,43 +293,46 @@
                     "circle-color": "#ff9900"
                 }
             });
+            map.addLayer({
+                'id': '場地',
+                'type': 'fill',
+                'source': 'mapArea',
+                'paint': {
+                    'fill-color': 'green',
+                    'fill-opacity': 0.8
+                }
+            });
+            map.addLayer({
+                'id': '入口',
+                'type': 'circle',
+                'source': 'mapEntrance',
+                'paint': {
+                    "circle-radius": 10,
+                    "circle-color": "#ff00ff"
+                }
+            });
 
         });
-
-        //開啟屬性顯示
-        // map.on('click', '外圈', function (e) {
-        //     new mapboxgl.Popup()
-        //         .setLngLat(e.lngLat)
-        //         .setHTML('名稱：' + e.features[0].properties.name)
-        //         .addTo(map);
-        // });
-        // map.on('click', '內圈', function (e) {
-        //     new mapboxgl.Popup()
-        //         .setLngLat(e.lngLat)
-        //         .setHTML(e.features[0].properties.name)
-        //         .addTo(map);
-        // });
 
         //站點click
         map.on('click', '站點', function (e) {
             const coordinates = e.features[0].geometry.coordinates.slice();
+            const id = e.features[0].properties.id;
             const name = e.features[0].properties.name;
+            const img = e.features[0].properties.imgUrl;
 
-            // Ensure that if the map is zoomed out such that multiple
-            // copies of the feature are visible, the popup appears
-            // over the copy being pointed to.
             while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                 coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
             }
 
             new mapboxgl.Popup()
                 .setLngLat(coordinates)
-                .setHTML(name)
+                .setHTML(name + img)
                 .addTo(map);
         });
 
         //GeoJSON圖層開關
-        const toggleableLayerIds = ['外圈', '內圈', '站點'];
+        const toggleableLayerIds = ['外圈', '內圈', '站點', '場地', '入口'];
         for (var i = 0; i < toggleableLayerIds.length; i++) {
             var id = toggleableLayerIds[i];
 
@@ -424,14 +386,12 @@
             $('#menu').toggle(200);
             $('#multiDiv').toggle(200);
             $('#legendDiv').toggle(200);
-            $('#layerSwitch').toggle(200);
             clickButton.className = "clickOff";
             $('#menuIcon').addClass('fa-toggle-on').removeClass('fa-toggle-off');
         } else {
             $('#menu').toggle(200);
             $('#multiDiv').toggle(200);
             $('#legendDiv').toggle(200);
-            $('#layerSwitch').toggle(200);
             clickButton.className = "clickOn";
             $('#menuIcon').addClass('fa-toggle-off').removeClass('fa-toggle-on');
         }
