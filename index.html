@@ -30,6 +30,7 @@
         <div><span style='background-color: green'></span>預定主場地</div>
         <div><span style='background-color: #ff00ff;border-radius: 50%'></span>起跑、終點位置</div>
         <div><span style='background-color: orange;border-radius: 50%'></span>點位位置</div>
+        <div><img style='width:15px' src='img/convenience.png' />補站位置</div>
     </div>
 
 
@@ -39,6 +40,7 @@
     </div>
 
     <script>
+        //加入地圖及accessToken
         mapboxgl.accessToken =
             'pk.eyJ1IjoibWFyY3VzMjExIiwiYSI6ImNqbnp0NHkxMTJoemkzdnBqc281cmdkNmkifQ.r5FLY-fEDnMVnArKFkABRg';
         const map = new mapboxgl.Map({
@@ -48,11 +50,11 @@
             zoom: 13 // starting zoom
         });
 
-        //Display map navigation controls
+        //加入地圖控制器
         const buttonNav = new mapboxgl.NavigationControl();
         document.getElementById('navDiv').appendChild(buttonNav.onAdd(map));
 
-        // Add geolocate control to the map.
+        //加入地理定位控制器
         const buttonGeoLocate = new mapboxgl.GeolocateControl({
             positionOptions: {
                 enableHighAccuracy: true
@@ -61,7 +63,7 @@
         });
         document.getElementById('geoLocateDiv').appendChild(buttonGeoLocate.onAdd(map));
 
-        //add ScaleControl
+        //加入比例尺控制器
         const scale = new mapboxgl.ScaleControl({
             maxWidth: 100,
             unit: 'Microsoft JhengHei'
@@ -244,7 +246,29 @@
                     },
                 });
             });
+            //補佔位置
+            map.addSource('mapSupply', {
+                type: 'geojson',
+                data: 'GeoJSON/supplyPoint.geojson'
+            });
+            map.loadImage('http://maps.google.com/mapfiles/kml/shapes/convenience.png', function (error,
+                image) {
+                if (error) throw error;
+                map.addImage('supply', image);
+                map.addLayer({
+                    "id": "補站",
+                    'type': 'symbol',
+                    "source": "mapSupply",
+                    "layout": {
+                        "icon-image": "supply",
+                        "icon-size": 0.75,
+                        'icon-allow-overlap': true,
+                        'icon-ignore-placement': false,
+                    },
+                });
+            });
         });
+
         //站點click
         map.on('click', '站點', function (e) {
             const coordinates = e.features[0].geometry.coordinates.slice();
@@ -261,9 +285,24 @@
                 .setHTML(name + img)
                 .addTo(map);
         });
+        //補站click
+        map.on('click', '補站', function (e) {
+            const supplyCoordinates = e.features[0].geometry.coordinates.slice();
+            const supplyName = e.features[0].properties.Name;
+
+            while (Math.abs(e.lngLat.lng - supplyCoordinates[0]) > 180) {
+                supplyCoordinates[0] += e.lngLat.lng > supplyCoordinates[0] ? 360 : -360;
+            }
+
+            new mapboxgl.Popup()
+                .setLngLat(supplyCoordinates)
+                .setHTML(supplyName)
+                .addTo(map);
+        });
+
 
         //GeoJSON圖層開關
-        const toggleableLayerIds = ['外圈', '內圈', '站點', '場地', '入口', '紅向', '藍向', '紅字', '藍字'];
+        const toggleableLayerIds = ['外圈', '內圈', '站點', '場地', '入口', '紅向', '藍向', '紅字', '藍字', '補站'];
         for (var i = 0; i < toggleableLayerIds.length; i++) {
             var id = toggleableLayerIds[i];
 
@@ -297,18 +336,18 @@
             layers.appendChild(link);
         }
 
-        // Change the cursor to a pointer when the mouse is over the places layer.
+        //滑鼠游標改變(Change the cursor to a pointer when the mouse is over the places layer.)
         map.on('mouseenter', 'places', function () {
             map.getCanvas().style.cursor = 'pointer';
         });
 
-        // Change it back to a pointer when it leaves.
+        //滑鼠游標改變(Change it back to a pointer when it leaves.)
         map.on('mouseleave', 'point', function () {
             map.getCanvas().style.cursor = '';
         });
     </script>
 </body>
-<!--menu switch-->
+<!--選單切換-->
 <script>
     $("#clickButton").click(function () {
         let className = clickButton.getAttribute("class");
@@ -328,5 +367,7 @@
         }
     });
 </script>
+<!--website made by marcus211, contact:-->
+<!--update time: 2019-10-17-->
 
 </html>
