@@ -2,196 +2,18 @@
 <html>
 
 <head>
+    <link rel="shortcut icon" href="img/favicon.ico" />
     <meta charset='utf-8' />
     <title>2019地質嘉年華－路跑路線圖</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.1/mapbox-gl.js'></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.1/mapbox-gl.css' rel='stylesheet' />
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        #map {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
 <!--font-awesome 5.6.3-->
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
     integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-
-<style>
-    /*switch clickButton*/
-    .clickOff {
-        z-index: 100;
-        display: inline-block;
-        text-align: center;
-        vertical-align: middle;
-        width: 50px;
-        height: 50px;
-        /*div position control to map left*/
-        position: absolute;
-        left: 10px;
-        bottom: 40px;
-        border-color: rgba(50, 50, 50, 0.5);
-        background-color: #FFFFFF;
-        border-style: outset;
-        border-width: 2.5px;
-        border-radius: 10px;
-        box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.50);
-    }
-
-    .clickOff:active {
-        border-style: inset;
-        background-color: #696969;
-    }
-
-    .clickOn {
-        z-index: 100;
-        display: inline-block;
-        text-align: center;
-        vertical-align: middle;
-        width: 50px;
-        height: 50px;
-        /*div position control to map left*/
-        position: absolute;
-        left: 10px;
-        bottom: 40px;
-        border-color: rgba(50, 50, 50, 0.5);
-        background-color: #FFFFFF;
-        border-style: outset;
-        border-width: 2.5px;
-        border-radius: 10px;
-        box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.50);
-    }
-
-    .clickOn:active {
-        border-style: inset;
-        background-color: #696969;
-    }
-
-    .clickTarget {
-        position: relative;
-        top: 8px;
-        left: 0;
-    }
-
-    /*zoom,nav,geolocate*/
-    .customMultiDiv {
-        display: block;
-        background: rgb(255, 255, 255);
-        position: absolute;
-        z-index: 1;
-        top: 10px;
-        left: 10px;
-        padding: 5px;
-        border-radius: 5px;
-        border: 1px solid rgba(0, 0, 0, 0.4);
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.50);
-    }
-
-    .customButton {
-        padding: 2px 2px 2px 2px
-    }
-
-    /*路線及點位*/
-    #menu {
-        display: flex;
-        background: rgb(255, 255, 255);
-        position: absolute;
-        z-index: 10;
-        top: 10px;
-        left: 60px;
-        padding: 5px;
-        border-radius: 5px;
-        max-width: 240px;
-        border: 1px solid rgba(0, 0, 0, 0.4);
-        box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.50);
-        font-family: 'Open Sans', sans-serif;
-    }
-
-    #menu a {
-        font-size: 13px;
-        color: #404040;
-        display: block;
-        margin: 5px 5px 5px 5px;
-        border-radius: 5px;
-        padding: 10px;
-        text-decoration: none;
-        text-align: center;
-    }
-
-    #menu a:last-child {
-        border: none;
-    }
-
-    #menu a:hover {
-        background-color: #f8f8f8;
-        color: #404040;
-    }
-
-    #menu a.active {
-        border-radius: 5px;
-        background-color: #004cff;
-        color: #ffffff;
-    }
-
-    #menu a.active:hover {
-        background: #0095ff;
-    }
-
-    /*圖例*/
-    .legend {
-        background-color: #fff;
-        border-radius: 3px;
-        right: 10px;
-        bottom: 100px;
-        box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.50);
-        font: 1.2em 'Microsoft JhengHei', Arial, Helvetica, sans-serif;
-        padding: 10px;
-        position: absolute;
-        z-index: 1;
-    }
-
-    .legend h4 {
-        text-align: center;
-        font: 1.5em 'Microsoft JhengHei', Arial, Helvetica, sans-serif;
-        margin: 0 0 10px;
-    }
-
-    .legend div span {
-        border-radius: 0px;
-        display: inline-block;
-        height: 10px;
-        margin-right: 5px;
-        width: 10px;
-    }
-
-    /*layers menu*/
-    #layerSwitch {
-        display: block;
-        background: rgb(255, 255, 255);
-        position: absolute;
-        z-index: 1;
-        top: 40%;
-        left: 10px;
-        padding: 5px;
-        border-radius: 5px;
-        border: 1px solid rgba(0, 0, 0, 0.4);
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.50);
-        font-family: 'Open Sans', sans-serif;
-    }
-
-    .layersMenu {
-        height: 30px;
-    }
-</style>
 
 <body>
     <div id='map'></div>
@@ -205,30 +27,12 @@
         <h4>圖　例</h4>
         <div><span style='background-color: red'></span>外圈路跑路線</div>
         <div><span style='background-color: blue'></span>內圈路跑路線</div>
-        <div><span style='background-color: orange'></span>點位位置</div>
+        <div><span style='background-color: green'></span>預定主場地</div>
+        <div><span style='background-color: #ff00ff;border-radius: 50%'></span>起跑、終點位置</div>
+        <div><span style='background-color: orange;border-radius: 50%'></span>點位位置</div>
+        <div><img style='width:15px' src='img/convenience.png' />補站位置</div>
     </div>
-    <div id='layerSwitch'>
-        <div class='layersMenu'>
-            <input id='streets-v11' type='radio' name='rtoggle' value='streets' checked='checked'>
-            <label for='streets'>streets</label>
-        </div>
-        <div class='layersMenu'>
-            <input id='light-v10' type='radio' name='rtoggle' value='light'>
-            <label for='light'>light</label>
-        </div>
-        <div class='layersMenu'>
-            <input id='dark-v10' type='radio' name='rtoggle' value='dark'>
-            <label for='dark'>dark</label>
-        </div>
-        <div class='layersMenu'>
-            <input id='outdoors-v11' type='radio' name='rtoggle' value='outdoors'>
-            <label for='outdoors'>outdoors</label>
-        </div>
-        <div class='layersMenu'>
-            <input id='satellite-v9' type='radio' name='rtoggle' value='satellite'>
-            <label for='satellite'>satellite</label>
-        </div>
-    </div>
+
 
     <!--欄位介面-->
     <div id="clickButton" class="clickOff">
@@ -236,33 +40,21 @@
     </div>
 
     <script>
+        //加入地圖及accessToken
         mapboxgl.accessToken =
             'pk.eyJ1IjoibWFyY3VzMjExIiwiYSI6ImNqbnp0NHkxMTJoemkzdnBqc281cmdkNmkifQ.r5FLY-fEDnMVnArKFkABRg';
         const map = new mapboxgl.Map({
             container: 'map', // container id
             style: 'mapbox://styles/mapbox/streets-v10',
-            center: [120.731408, 23.822170], // starting position
-            zoom: 14 // starting zoom
+            center: [120.74998, 23.822170], // starting position
+            zoom: 13 // starting zoom
         });
 
-
-        //Layers Switch
-        const layerList = document.getElementById('layerSwitch');
-        const inputs = layerList.getElementsByTagName('input');
-
-        function switchLayer(d) {
-            console.log(d.target.id);
-            map.setStyle('mapbox://styles/mapbox/' + d.target.id);
-        }
-        for (var i = 0; i < inputs.length; i++) {
-            inputs[i].onclick = switchLayer;
-        }
-
-        //Display map navigation controls
+        //加入地圖控制器
         const buttonNav = new mapboxgl.NavigationControl();
         document.getElementById('navDiv').appendChild(buttonNav.onAdd(map));
 
-        // Add geolocate control to the map.
+        //加入地理定位控制器
         const buttonGeoLocate = new mapboxgl.GeolocateControl({
             positionOptions: {
                 enableHighAccuracy: true
@@ -271,7 +63,7 @@
         });
         document.getElementById('geoLocateDiv').appendChild(buttonGeoLocate.onAdd(map));
 
-        //add ScaleControl
+        //加入比例尺控制器
         const scale = new mapboxgl.ScaleControl({
             maxWidth: 100,
             unit: 'Microsoft JhengHei'
@@ -283,26 +75,14 @@
         document.getElementById('legendDiv').style.display = 'block';
 
         map.on('style.load', function () {
-            //setup geojson data
-            const longPath = 'GeoJSON/longRoute.geojson';
-            const shortPath = 'GeoJSON/shortRoute.geojson';
-            const marker = 'GeoJSON/markerPoint.geojson';
+            //setup geojson data & add source
+            // const longPath = 'GeoJSON/longRoute.geojson';
 
-            //add source
+            //外圈路線
             map.addSource('longRoad', {
                 type: 'geojson',
-                data: longPath
+                data: 'GeoJSON/longRoute.geojson'
             });
-            map.addSource('shortRoad', {
-                type: 'geojson',
-                data: shortPath
-            });
-            map.addSource('mapPoint', {
-                type: 'geojson',
-                data: marker
-            });
-
-            //add geojson data to layer
             map.addLayer({
                 'id': '外圈',
                 'type': 'line',
@@ -313,6 +93,12 @@
                     'line-color': '#FF0000',
                     'line-opacity': 0.7
                 }
+            });
+
+            //內圈路線
+            map.addSource('shortRoad', {
+                type: 'geojson',
+                data: 'GeoJSON/shortRoute.geojson'
             });
             map.addLayer({
                 'id': '內圈',
@@ -325,6 +111,12 @@
                     'line-opacity': 0.7
                 }
             });
+
+            //站點位置
+            map.addSource('mapPoint', {
+                type: 'geojson',
+                data: 'GeoJSON/markerPoint.geojson'
+            });
             map.addLayer({
                 'id': '站點',
                 'type': 'circle',
@@ -335,42 +127,182 @@
                 }
             });
 
-        });
+            //入口位置
+            map.addSource('mapEntrance', {
+                type: 'geojson',
+                data: 'GeoJSON/mapEntrance.geojson'
+            });
+            map.addLayer({
+                'id': '入口',
+                'type': 'circle',
+                'source': 'mapEntrance',
+                'paint': {
+                    "circle-radius": 10,
+                    "circle-color": "#ff00ff"
+                }
+            });
 
-        //開啟屬性顯示
-        // map.on('click', '外圈', function (e) {
-        //     new mapboxgl.Popup()
-        //         .setLngLat(e.lngLat)
-        //         .setHTML('名稱：' + e.features[0].properties.name)
-        //         .addTo(map);
-        // });
-        // map.on('click', '內圈', function (e) {
-        //     new mapboxgl.Popup()
-        //         .setLngLat(e.lngLat)
-        //         .setHTML(e.features[0].properties.name)
-        //         .addTo(map);
-        // });
+            //場地位置
+            map.addSource('mapArea', {
+                type: 'geojson',
+                data: 'GeoJSON/mapArea.geojson'
+            });
+            map.addLayer({
+                'id': '場地',
+                'type': 'fill',
+                'source': 'mapArea',
+                'paint': {
+                    'fill-color': 'green',
+                    'fill-opacity': 0.8
+                }
+            });
+
+            //紅色箭頭
+            map.addSource('mapStrikeRed', {
+                type: 'geojson',
+                data: 'GeoJSON/strikeRed.geojson'
+            });
+            map.loadImage('img/redarrow.png', function (error, image) {
+                if (error) throw error;
+                map.addImage('red', image);
+                map.addLayer({
+                    "id": "紅向",
+                    'type': 'symbol',
+                    "source": "mapStrikeRed",
+                    "layout": {
+                        "icon-image": "red",
+                        "icon-rotate": {
+                            "type": "identity",
+                            "property": "strike"
+                        },
+                        "icon-size": 0.4,
+                        'icon-allow-overlap': true,
+                        'icon-ignore-placement': false,
+                    },
+                });
+            });
+            //紅色文字
+            map.addSource('mapTextRed', {
+                type: 'geojson',
+                data: 'GeoJSON/textRed.geojson'
+            });
+            map.loadImage('img/outerline.png', function (error, image) {
+                if (error) throw error;
+                map.addImage('redtxt', image);
+                map.addLayer({
+                    "id": "紅字",
+                    'type': 'symbol',
+                    "source": "mapTextRed",
+                    "layout": {
+                        "icon-image": "redtxt",
+                        "icon-size": 1,
+                        'icon-allow-overlap': true,
+                        'icon-ignore-placement': false,
+                    },
+                });
+            });
+
+            //藍色箭頭
+            map.addSource('mapStrikeBlue', {
+                type: 'geojson',
+                data: 'GeoJSON/strikeBlue.geojson'
+            });
+            map.loadImage('img/bluearrow.png', function (error, image) {
+                if (error) throw error;
+                map.addImage('blue', image);
+                map.addLayer({
+                    "id": "藍向",
+                    'type': 'symbol',
+                    "source": "mapStrikeBlue",
+                    "layout": {
+                        "icon-image": "blue",
+                        "icon-rotate": {
+                            "type": "identity",
+                            "property": "strike"
+                        },
+                        "icon-size": 0.2,
+                        'icon-allow-overlap': false,
+                        'icon-ignore-placement': false,
+                    },
+                });
+            });
+            //藍色文字
+            map.addSource('mapTextBlue', {
+                type: 'geojson',
+                data: 'GeoJSON/textBlue.geojson'
+            });
+            map.loadImage('img/innerline.png', function (error, image) {
+                if (error) throw error;
+                map.addImage('bluetxt', image);
+                map.addLayer({
+                    "id": "藍字",
+                    'type': 'symbol',
+                    "source": "mapTextBlue",
+                    "layout": {
+                        "icon-image": "bluetxt",
+                        "icon-size": 1,
+                        'icon-allow-overlap': true,
+                        'icon-ignore-placement': false,
+                    },
+                });
+            });
+            //補佔位置
+            map.addSource('mapSupply', {
+                type: 'geojson',
+                data: 'GeoJSON/supplyPoint.geojson'
+            });
+            map.loadImage('http://maps.google.com/mapfiles/kml/shapes/convenience.png', function (error,
+                image) {
+                if (error) throw error;
+                map.addImage('supply', image);
+                map.addLayer({
+                    "id": "補站",
+                    'type': 'symbol',
+                    "source": "mapSupply",
+                    "layout": {
+                        "icon-image": "supply",
+                        "icon-size": 0.75,
+                        'icon-allow-overlap': true,
+                        'icon-ignore-placement': false,
+                    },
+                });
+            });
+        });
 
         //站點click
         map.on('click', '站點', function (e) {
             const coordinates = e.features[0].geometry.coordinates.slice();
+            const id = e.features[0].properties.id;
             const name = e.features[0].properties.name;
+            const img = e.features[0].properties.imgUrl;
 
-            // Ensure that if the map is zoomed out such that multiple
-            // copies of the feature are visible, the popup appears
-            // over the copy being pointed to.
             while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                 coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
             }
 
             new mapboxgl.Popup()
                 .setLngLat(coordinates)
-                .setHTML(name)
+                .setHTML(name + img)
+                .addTo(map);
+        });
+        //補站click
+        map.on('click', '補站', function (e) {
+            const supplyCoordinates = e.features[0].geometry.coordinates.slice();
+            const supplyName = e.features[0].properties.Name;
+
+            while (Math.abs(e.lngLat.lng - supplyCoordinates[0]) > 180) {
+                supplyCoordinates[0] += e.lngLat.lng > supplyCoordinates[0] ? 360 : -360;
+            }
+
+            new mapboxgl.Popup()
+                .setLngLat(supplyCoordinates)
+                .setHTML(supplyName)
                 .addTo(map);
         });
 
+
         //GeoJSON圖層開關
-        const toggleableLayerIds = ['外圈', '內圈', '站點'];
+        const toggleableLayerIds = ['外圈', '內圈', '站點', '場地', '入口', '紅向', '藍向', '紅字', '藍字', '補站'];
         for (var i = 0; i < toggleableLayerIds.length; i++) {
             var id = toggleableLayerIds[i];
 
@@ -404,18 +336,18 @@
             layers.appendChild(link);
         }
 
-        // Change the cursor to a pointer when the mouse is over the places layer.
+        //滑鼠游標改變(Change the cursor to a pointer when the mouse is over the places layer.)
         map.on('mouseenter', 'places', function () {
             map.getCanvas().style.cursor = 'pointer';
         });
 
-        // Change it back to a pointer when it leaves.
+        //滑鼠游標改變(Change it back to a pointer when it leaves.)
         map.on('mouseleave', 'point', function () {
             map.getCanvas().style.cursor = '';
         });
     </script>
 </body>
-<!--menu switch-->
+<!--選單切換-->
 <script>
     $("#clickButton").click(function () {
         let className = clickButton.getAttribute("class");
@@ -424,18 +356,18 @@
             $('#menu').toggle(200);
             $('#multiDiv').toggle(200);
             $('#legendDiv').toggle(200);
-            $('#layerSwitch').toggle(200);
             clickButton.className = "clickOff";
             $('#menuIcon').addClass('fa-toggle-on').removeClass('fa-toggle-off');
         } else {
             $('#menu').toggle(200);
             $('#multiDiv').toggle(200);
             $('#legendDiv').toggle(200);
-            $('#layerSwitch').toggle(200);
             clickButton.className = "clickOn";
             $('#menuIcon').addClass('fa-toggle-off').removeClass('fa-toggle-on');
         }
     });
 </script>
+<!-- website made by marcus211, contact:"https://marcus211.github.io/webresume/index.html" -->
+<!-- update time: 2019-10-17 -->
 
 </html>

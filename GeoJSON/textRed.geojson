@@ -1,0 +1,15 @@
+{
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "properties": {
+            "marker-color": "#ff00ff",
+            "marker-size": "large",
+            "marker-symbol": "star"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [120.755862, 23.810515]
+        }
+    }]
+}
